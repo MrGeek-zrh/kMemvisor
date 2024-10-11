@@ -40,3 +40,17 @@ Reference
 =========
 [kMemvisor: flexible system wide memory mirroring in virtual environments.](http://dl.acm.org/citation.cfm?doid=2462902.2462910)  
 [Memvisor: Application Level Memory Mirroring via Binary Translation](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=6337823)
+
+# 静态二进制翻译
+
+本项目当前并未实现静态二进制翻译功能。静态二进制翻译是一个复杂的过程，涉及将一种指令集架构的二进制代码转换为另一种架构的代码。这个功能的实现需要以下步骤:
+
+1. 解析原始二进制代码
+2. 分析代码的控制流和数据流
+3. 将原始指令映射到目标架构的等效指令
+4. 处理架构差异(如寄存器数量、内存模型等)
+5. 生成新的二进制代码
+
+如果需要添加静态二进制翻译功能，建议创建一个新的模块或组件来专门处理这个过程。这可能需要对项目进行重大修改和扩展。
+
+目前，本项目主要聚焦于基本的操作系统内核功能实现。
