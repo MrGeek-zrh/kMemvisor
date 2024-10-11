@@ -14,3 +14,7 @@ kernel
 kernelmemfs
 mkfs
 .gdbinit
+
+.auto-coder/
+actions/
+output.txt
