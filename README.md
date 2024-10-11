@@ -1,26 +1,26 @@
-Introduction
+介绍
 =========
 
-kMemvisor is a hypervisor providing software controlled memory mirroring based on hardware virtualization and static binary translation. Specifically, kMemvisor first creates a backup memory space with the same size of a specified memory for applications or virtual machines.  
+kMemvisor是一个基于硬件虚拟化和静态二进制翻译提供软件控制内存镜像的虚拟机监控器。具体来说，kMemvisor首先为应用程序或虚拟机创建一个与指定内存大小相同的备份内存空间。
 
-MemV6 is a kMemvisor-like implementation for xv6. By modifying memory management module in the OS, MemV6 can achieve high-available memory access in xv6.
-![workflow](pic/workflow.png)  
-The above picture shows the workflow of kMemvisor's strategy  
+MemV6是一个类似kMemvisor的xv6实现。通过修改操作系统中的内存管理模块，MemV6可以在xv6中实现高可用的内存访问。
+![工作流程](pic/workflow.png)  
+上图展示了kMemvisor策略的工作流程  
 
-1. A block of physical memory will be reserved when a VM startups.  
-2. When native PTEs are updated, the related mirror PTEs will also be created.  
-3. Native instructions and mirror instructions will write the same data in different address.  
-4. If a page is corrupted, a new page will be allocated to the VM.  
-5. Map the virtual address to the new page.  
-6. Copy data from the mirror address.  
+1. 当虚拟机启动时,会保留一块物理内存。  
+2. 当本地页表项更新时,相关的镜像页表项也会被创建。  
+3. 本地指令和镜像指令会在不同的地址写入相同的数据。  
+4. 如果一个页面损坏,将为虚拟机分配一个新页面。  
+5. 将虚拟地址映射到新页面。  
+6. 从镜像地址复制数据。  
 
-Because of simplicity, we only implement memory redundant in MemV6.  
+由于简单性,我们在MemV6中只实现了内存冗余。  
 MemV6
 =========
 
-Memv6 will create the redundant page table while the native page table is created. When an application that has been binary translated runs, the duplicated memory write won't cause a page fualt. And the memory layout of xv6 is analyzed carefully so that there is no overlap between native address and redundant address.
+Memv6在创建本地页表的同时也会创建冗余页表。当一个经过二进制翻译的应用程序运行时,重复的内存写入不会导致页面错误。我们仔细分析了xv6的内存布局,确保本地地址和冗余地址之间没有重叠。
 
-Changed Files
+修改的文件
 ---------
 
 + memlayout.h
@@ -29,24 +29,24 @@ Changed Files
 + sysproc.c
 + proc.c
   
-Binary Translate
+二进制翻译
 ----------
 
-We use static binary translate to duplicate memory-write instructions so that every memory write will commit in mirrored memory either.  
-The following picture shows the overall architecture of binary translation.  
+我们使用静态二进制翻译来复制内存写指令,这样每次内存写入也会提交到镜像内存中。  
+下图展示了二进制翻译的总体架构。  
 ![bt](pic/bt.png)  
 
-Evaluation
+评估
 ----------
 
-We evaluated the performance of usertest(xv6's benchmark) between native xv6 and MemV6. This usertest contains several memory tests and the result shows that the largest overhead is still less than 60% and the average overhead is only 43%.  
-![evaluation](pic/evaluation.png)
+我们评估了原生xv6和MemV6上usertest(xv6的基准测试)的性能。这个usertest包含几个内存测试,结果显示最大开销仍然小于60%,平均开销只有43%。  
+![评估](pic/evaluation.png)
   
-Reference
+参考文献
 =========
 
-[kMemvisor: flexible system wide memory mirroring in virtual environments.](http://dl.acm.org/citation.cfm?doid=2462902.2462910)  
-[Memvisor: Application Level Memory Mirroring via Binary Translation](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=6337823)
+[kMemvisor: 虚拟环境中灵活的系统范围内存镜像。](http://dl.acm.org/citation.cfm?doid=2462902.2462910)  
+[Memvisor: 通过二进制翻译实现应用级内存镜像](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=6337823)
 
 # 静态二进制翻译
 
