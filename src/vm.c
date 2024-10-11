@@ -65,26 +65,35 @@ static pte_t *walkpgdir(pde_t *pgdir, const void *va, int alloc)
 // Create PTEs for virtual addresses starting at va that refer to
 // physical addresses starting at pa. va and size might not
 // be page-aligned.
+// 将一段物理地址映射到虚拟地址
+// 为从va到va+size的虚拟地址创建页表项，指向从pa开始的物理地址
+// perm参数包含新条目的权限位
 static int mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm)
 {
     char *a, *last;
     pte_t *pte;
 
+    // 将va向下取整到页面边界
     a = (char *)PGROUNDDOWN((uint)va);
+    // 计算要映射的最后一个地址
     last = (char *)PGROUNDDOWN(((uint)va) + size - 1);
     for (;;) {
+        // 获取页表项，如果不存在则创建
         if ((pte = walkpgdir(pgdir, a, 1)) == 0)
             return -1;
         if (*pte & PTE_P)
-            panic("remap");
+            panic("remap");  // 如果页面已经映射，则触发panic
+        // 创建页表项
         *pte = pa | perm | PTE_P;
         if (a == last)
             break;
+        // 移动到下一页
         a += PGSIZE;
         pa += PGSIZE;
     }
 
     /*===hacked to create mirror address===*/
+    // 如果地址不是镜像地址，则创建镜像映射
     if (!HAMA_IS_MIRROR((uint)va)) {
         mappages(pgdir, (void *)((uint)va + HAMA_MIRROR), size, pa, perm);
     }
